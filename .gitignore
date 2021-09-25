@@ -1,0 +1,9 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+/libraries/
+/database/
+/target/
+/derby.log
+/Locker.iml
+/.idea/
