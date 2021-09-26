@@ -1,5 +1,6 @@
 package com.app.locker;
 
+import com.app.locker.controller.LoginGUIController;
 import com.app.locker.controller.SignupGUIController;
 import com.app.locker.utils.classes.DBConnector;
 import com.app.locker.utils.interfaces.WindowEventListener;
@@ -78,6 +79,12 @@ public class Main extends Application implements WindowEventListener {
     // Returns a stage with the LoginGUI.fxml file loaded up
     private Stage getLoginStage(){
         Stage stage = new Stage();
+        Parent root = null;
+        try{
+            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/LoginGUI.fxml")));
+        }catch (IOException ignored){
+        }
+        stage.setScene(new Scene(root));
         stage.setResizable(false);
         stage.setTitle("Log In");
         return stage;
@@ -87,6 +94,7 @@ public class Main extends Application implements WindowEventListener {
     private void loadLogin(){
         currentStage = getLoginStage();
         currentStage.show();
+        LoginGUIController.addWindowEventListener(this);
     }
 
     // Deletes the local database
@@ -104,11 +112,20 @@ public class Main extends Application implements WindowEventListener {
     @Override
     public void onSignupWindowClosed() {
         currentStage.close();
-        currentStage = getLoginStage();
-        currentStage.show();
+        loadLogin();
     }
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    @Override
+    public void onPasswordTableRequested() {
+        System.out.println("Login Successful");
+    }
+
+    @Override
+    public void onDatabaseResetRequested() {
+        System.exit(1);
     }
 }

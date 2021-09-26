@@ -2,13 +2,14 @@ package com.app.locker.controller;
 
 import com.app.locker.utils.classes.DBConnector;
 import com.app.locker.utils.interfaces.WindowEventListener;
-import com.app.locker.view.LoginGUI;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 import java.sql.SQLException;
 
@@ -34,6 +35,13 @@ public class SignupGUIController {
     }
 
     @FXML
+    public void onKeyPressed(KeyEvent event){
+        if (event.getCode() == KeyCode.ENTER){
+            onStartClicked();
+        }
+    }
+
+    @FXML
     public void onStartClicked(){
         String username = txtUsername.getText().trim();
         String password = txtPassword.getText().trim();
@@ -41,22 +49,12 @@ public class SignupGUIController {
             password = toSHA256(password);
             try{
                 DBConnector.createNewUser(username, password);
-                new Alert(Alert.AlertType.INFORMATION, "Successfully created your account!").show();
+                new Alert(Alert.AlertType.INFORMATION, "Successfully created your account!").showAndWait();
                 windowEventListener.onSignupWindowClosed(); // Invoke the listener in Main.java to handle the progress
             }catch (SQLException e){
                 new Alert(Alert.AlertType.ERROR, "Error in the database! Please restart the app.").show();
             }
         }
-    }
-
-    private static void launchLoginGUI(){
-        new Thread(){
-            @Override
-            public void run() {
-                super.run();
-                javafx.application.Application.launch(LoginGUI.class);
-            }
-        }.start();
     }
 
 }

@@ -32,14 +32,19 @@ public class DBConnector {
         preparedStatement.executeUpdate();
     }
 
-    public static String getPassword() throws SQLException {
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("select password from locker.user_details");
-        String password = null;
-        while(rs.next()){
-            password = rs.getString(1);
+    public static String getPassword() {
+        try{
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("select password from locker.user_details");
+            String password = null;
+            while(rs.next()){
+                password = rs.getString(1);
+            }
+            return  password;
+        }catch (SQLException e){
+            System.exit(1);
         }
-        return  password;
+        return null;
     }
 
 }
