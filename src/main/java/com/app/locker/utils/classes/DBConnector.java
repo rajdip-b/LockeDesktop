@@ -1,4 +1,4 @@
-package com.app.locker.utils;
+package com.app.locker.utils.classes;
 
 import java.sql.*;
 
@@ -30,6 +30,16 @@ public class DBConnector {
         preparedStatement.setString(1, username);
         preparedStatement.setString(2, password);
         preparedStatement.executeUpdate();
+    }
+
+    public static String getPassword() throws SQLException {
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery("select password from locker.user_details");
+        String password = null;
+        while(rs.next()){
+            password = rs.getString(1);
+        }
+        return  password;
     }
 
 }
