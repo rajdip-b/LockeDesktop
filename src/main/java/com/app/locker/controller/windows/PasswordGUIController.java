@@ -81,10 +81,13 @@ public class PasswordGUIController implements TableEventListener {
         Alert a = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure? This can't be undone!", ButtonType.YES, ButtonType.CANCEL);
         a.showAndWait();
         if (a.getResult() == ButtonType.YES) {
-            System.out.println("Yes");
-            return;
+            try {
+                dbConnector.deleteAllEntries();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        System.out.println("No");
+        entries.clear();
     }
 
     @FXML
