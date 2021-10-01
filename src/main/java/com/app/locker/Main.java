@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Objects;
 
 public class Main extends Application implements WindowEventListener {
@@ -50,7 +49,9 @@ public class Main extends Application implements WindowEventListener {
         Parent root = null;
         try{
             root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/windows/SignupGUI.fxml")));
-        }catch (IOException ignored){
+        }catch (IOException e){
+            System.out.println("Resource missing: SignupGUI.fxml");
+            System.exit(1);
         }
         stage.setScene(new Scene(root));
         stage.setTitle("Create your space");
@@ -77,7 +78,9 @@ public class Main extends Application implements WindowEventListener {
         Parent root = null;
         try{
             root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/windows/LoginGUI.fxml")));
-        }catch (IOException ignored){
+        }catch (IOException e){
+            System.out.println("Resource missing: LoginGUI.fxml");
+            System.exit(1);
         }
         stage.setScene(new Scene(root));
         stage.setResizable(false);
@@ -98,7 +101,8 @@ public class Main extends Application implements WindowEventListener {
         try{
             root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/windows/PasswordGUI.fxml")));
         }catch (IOException e){
-            e.printStackTrace();
+            System.out.println("Resource missing: PasswordGUI.fxml");
+            System.exit(1);
         }
         stage.setScene(new Scene(root));
         stage.setResizable(false);

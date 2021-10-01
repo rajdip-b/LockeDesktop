@@ -1,6 +1,7 @@
 package com.app.locker.controller.windows;
 
 import com.app.locker.controller.popups.AddItemPopupController;
+import com.app.locker.controller.popups.DeleteItemPopupController;
 import com.app.locker.model.Entry;
 import com.app.locker.utils.classes.DBConnector;
 import com.app.locker.utils.interfaces.TableEventListener;
@@ -12,15 +13,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class PasswordGUIController implements TableEventListener {
 
+    @FXML AnchorPane anchorPane;
     @FXML TableView<Entry> table;
     @FXML TableColumn<Entry, String> colService;
     @FXML TableColumn<Entry, String> colUsername;
@@ -38,7 +42,7 @@ public class PasswordGUIController implements TableEventListener {
         try{
             dbConnector.setConnectionWithoutCreate();
         }catch (SQLException e){
-            e.printStackTrace();
+            System.out.println("Error accessing database!");
             new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
             System.exit(1);
         }
@@ -53,17 +57,21 @@ public class PasswordGUIController implements TableEventListener {
 
     @FXML
     public void onAddClicked(){
+        anchorPane.setDisable(true);
         Parent root = null;
         try{
             root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/popups/AddItemPopup.fxml")));
         }catch (IOException e){
-            e.printStackTrace();
+            System.out.println("Resource missing: AddItemPopup.fxml");
             System.exit(1);
         }
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.setTitle("Add item");
         stage.setResizable(false);
+        stage.setOnCloseRequest(event -> {
+            anchorPane.setDisable(false);
+        });
         stage.show();
         AddItemPopupController.addTableEventListener(this);
     }
@@ -74,6 +82,23 @@ public class PasswordGUIController implements TableEventListener {
 
     @FXML
     public void onDeleteClicked(){
+        anchorPane.setDisable(true);
+        Parent root = null;
+        try{
+            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/popups/DeleteItemPopup.fxml")));
+        }catch (IOException e){
+            System.out.println("Resource missing: DeleteItemPopup.fxml");
+            System.exit(1);
+        }
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Delete item");
+        stage.setResizable(false);
+        stage.setOnCloseRequest(event -> {
+            anchorPane.setDisable(false);
+        });
+        stage.show();
+        DeleteItemPopupController.addTableEventListener(this);
     }
 
     @FXML
@@ -84,7 +109,7 @@ public class PasswordGUIController implements TableEventListener {
             try {
                 dbConnector.deleteAllEntries();
             } catch (SQLException e) {
-                e.printStackTrace();
+                System.out.println("Error accessing/writing to database!");
             }
         }
         entries.clear();
@@ -97,7 +122,7 @@ public class PasswordGUIController implements TableEventListener {
         try {
             existingEntries = dbConnector.getExistingData();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Error accessing/writing to database!");
             new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
             System.exit(1);
         }
@@ -111,11 +136,16 @@ public class PasswordGUIController implements TableEventListener {
 
     @Override
     public void onItemAdded(Entry entry) {
-        entries.add(entry);
         try{
             dbConnector.addData(entry);
-        }catch (SQLException e){
-            e.printStackTrace();
+            entries.add(entry);
+        }
+        catch (SQLIntegrityConstraintViolationException e){
+            System.out.println("Duplicate field value detected!");
+            new Alert(Alert.AlertType.ERROR, "An entry with this service name already exists!").showAndWait();
+        }
+        catch (SQLException e){
+            System.out.println("Error accessing/writing to database");
             new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
             System.exit(1);
         }
@@ -128,6 +158,13 @@ public class PasswordGUIController implements TableEventListener {
 
     @Override
     public void onItemDeleted(Entry entry) {
-        System.out.println(entry.toString());
+        try{
+            dbConnector.deleteEntry(entry);
+            entries.remove(entry);
+        }catch (SQLException e){
+            System.out.println("Error accessing/writing to database!");
+            new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
+            System.exit(1);
+        }
     }
 }

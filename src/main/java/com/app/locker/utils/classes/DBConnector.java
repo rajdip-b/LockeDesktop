@@ -77,6 +77,12 @@ public class DBConnector {
         statement.execute("delete from locker.user_services");
     }
 
+    public void deleteEntry(Entry entry) throws SQLException{
+        PreparedStatement preparedStatement = connection.prepareStatement("delete from locker.user_services where service = ?");
+        preparedStatement.setString(1, entry.getService());
+        preparedStatement.executeUpdate();
+    }
+
     public String getPassword() throws SQLException{
         Statement statement = connection.createStatement();
         ResultSet rs = statement.executeQuery("select password from locker.user_details");
