@@ -108,7 +108,6 @@ public class PasswordGUIController implements TableEventListener {
 
     @Override
     public void onItemAdded(Entry entry) {
-        System.out.println(entry.toString());
         entries.add(entry);
         try{
             dbConnector.addData(entry);
