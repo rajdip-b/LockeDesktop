@@ -1,4 +1,4 @@
-package com.app.locker.controller;
+package com.app.locker.controller.windows;
 
 import com.app.locker.utils.classes.DBConnector;
 import com.app.locker.utils.interfaces.WindowEventListener;
@@ -12,12 +12,26 @@ import javafx.scene.input.KeyEvent;
 import static com.app.locker.utils.classes.Hash.toSHA256;
 
 import java.io.File;
+import java.sql.SQLException;
 
 public class LoginGUIController {
 
     @FXML private PasswordField txtPassword;
 
+    private DBConnector dbConnector;
     private static WindowEventListener windowEventListener;
+
+    @FXML
+    public void initialize(){
+        dbConnector = new DBConnector();
+        try{
+            dbConnector.setConnectionWithoutCreate();
+        }catch (SQLException e){
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
+            System.exit(1);
+        }
+    }
 
     public static void addWindowEventListener(WindowEventListener windowEventListener){
         LoginGUIController.windowEventListener = windowEventListener;
@@ -27,8 +41,20 @@ public class LoginGUIController {
     public void onOpenClicked(){
         String password = txtPassword.getText().trim();
         password = toSHA256(password);
-        String dbPassword = DBConnector.getPassword();
+        String dbPassword = null;
+        try{
+            dbPassword = dbConnector.getPassword();
+        }catch (SQLException e){
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
+            System.exit(1);
+        }
         if (dbPassword.equals(password)){
+            try {
+                dbConnector.connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             windowEventListener.onPasswordTableRequested();
         }else {
             new Alert(Alert.AlertType.ERROR, "Incorrect password!").show();
@@ -39,7 +65,14 @@ public class LoginGUIController {
     public void onResetClicked(){
         String password = txtPassword.getText().trim();
         password = toSHA256(password);
-        String dbPassword = DBConnector.getPassword();
+        String dbPassword = null;
+        try{
+            dbPassword = dbConnector.getPassword();
+        }catch (SQLException e){
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
+            System.exit(1);
+        }
         if (dbPassword.equals(password)){
             Alert a = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to reset all the settings? This option is irreversible.", ButtonType.YES, ButtonType.NO);
             a.showAndWait().ifPresent(response -> {

@@ -1,7 +1,7 @@
 package com.app.locker;
 
-import com.app.locker.controller.LoginGUIController;
-import com.app.locker.controller.SignupGUIController;
+import com.app.locker.controller.windows.LoginGUIController;
+import com.app.locker.controller.windows.SignupGUIController;
 import com.app.locker.utils.classes.DBConnector;
 import com.app.locker.utils.interfaces.WindowEventListener;
 import javafx.application.Application;
@@ -26,26 +26,21 @@ public class Main extends Application implements WindowEventListener {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        DBConnector dbConnector = new DBConnector();
         // Tries to connect to the existing derby database. If it exists, prompts for login.
         // Else, creates a new database and asks the user for a new signup.
         // For any corruption in the db, the app doesnt work.
         try{
-            DBConnector.setConnectionWithoutCreate();
+            dbConnector.setConnectionWithoutCreate();
             loadWindow = LOAD_LOGIN_WINDOW;
-        }catch (SQLException e){
-            try {
-                DBConnector.setConnectionWithCreate();
-                loadWindow = LOAD_SIGNUP_WINDOW;
-            }catch (SQLException ignored){
-                System.out.println("Exiting");
-                System.exit(1);
-            }
+        }catch (Exception e){
+            dbConnector.setConnectionWithCreate();
+            loadWindow = LOAD_SIGNUP_WINDOW;
         }
 
         switch (loadWindow){
             case LOAD_LOGIN_WINDOW -> loadLogin();
             case LOAD_SIGNUP_WINDOW -> loadSignup();
-            default -> {}
         }
     }
 
@@ -54,7 +49,7 @@ public class Main extends Application implements WindowEventListener {
         Stage stage = new Stage();
         Parent root = null;
         try{
-            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/SignupGUI.fxml")));
+            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/windows/SignupGUI.fxml")));
         }catch (IOException ignored){
         }
         stage.setScene(new Scene(root));
@@ -81,7 +76,7 @@ public class Main extends Application implements WindowEventListener {
         Stage stage = new Stage();
         Parent root = null;
         try{
-            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/LoginGUI.fxml")));
+            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/windows/LoginGUI.fxml")));
         }catch (IOException ignored){
         }
         stage.setScene(new Scene(root));
@@ -95,6 +90,30 @@ public class Main extends Application implements WindowEventListener {
         currentStage = getLoginStage();
         currentStage.show();
         LoginGUIController.addWindowEventListener(this);
+    }
+
+    private Stage getPasswordTableStage(){
+        Stage stage = new Stage();
+        Parent root = null;
+        try{
+            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/windows/PasswordGUI.fxml")));
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        stage.setScene(new Scene(root));
+        stage.setResizable(false);
+        stage.setTitle("Log In");
+        stage.setOnCloseRequest(event -> {
+            System.exit(1);
+        });
+        return stage;
+    }
+
+    // Loads up the login window
+    private void loadPasswordTable(){
+        currentStage.close();
+        currentStage = getPasswordTableStage();
+        currentStage.show();
     }
 
     // Deletes the local database
@@ -121,7 +140,7 @@ public class Main extends Application implements WindowEventListener {
 
     @Override
     public void onPasswordTableRequested() {
-        System.out.println("Login Successful");
+        loadPasswordTable();
     }
 
     @Override

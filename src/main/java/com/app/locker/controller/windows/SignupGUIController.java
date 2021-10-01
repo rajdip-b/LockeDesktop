@@ -1,4 +1,4 @@
-package com.app.locker.controller;
+package com.app.locker.controller.windows;
 
 import com.app.locker.utils.classes.DBConnector;
 import com.app.locker.utils.interfaces.WindowEventListener;
@@ -22,6 +22,7 @@ public class SignupGUIController {
     @FXML private ImageView imageView;
 
     private static WindowEventListener windowEventListener;
+    private DBConnector dbConnector;
 
     public static void addWindowEventListener(WindowEventListener windowEventListener){
         SignupGUIController.windowEventListener = windowEventListener;
@@ -29,9 +30,14 @@ public class SignupGUIController {
 
     @FXML
     public void initialize(){
-        Image image = new Image(String.valueOf(getClass().getResource("/images/img1.jpg")));
-        imageView.setImage(image);
-        imageView.setCache(true);
+        dbConnector = new DBConnector();
+        try {
+            dbConnector.setConnectionWithoutCreate();
+        }catch (SQLException e){
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Fatal error!").showAndWait();
+            System.exit(1);
+        }
     }
 
     @FXML
@@ -48,7 +54,8 @@ public class SignupGUIController {
         if (username.length() > 0 && password.length() > 0){
             password = toSHA256(password);
             try{
-                DBConnector.createNewUser(username, password);
+                dbConnector.createNewUser(username, password);
+                dbConnector.connection.close();
                 new Alert(Alert.AlertType.INFORMATION, "Successfully created your account!").showAndWait();
                 windowEventListener.onSignupWindowClosed(); // Invoke the listener in Main.java to handle the progress
             }catch (SQLException e){

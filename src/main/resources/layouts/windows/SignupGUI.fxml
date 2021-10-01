@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="337.0" prefWidth="668.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.locker.controller.SignupGUIController">
+<AnchorPane prefHeight="337.0" prefWidth="668.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.locker.controller.windows.SignupGUIController">
    <children>
       <Label layoutX="14.0" layoutY="14.0" prefHeight="45.0" prefWidth="326.0" text="Create your personal locker">
          <font>
@@ -18,7 +18,7 @@
       </Label>
       <ImageView fx:id="imageView" fitHeight="265.0" fitWidth="326.0" layoutX="14.0" layoutY="59.0" pickOnBounds="true">
          <image>
-            <Image url="@../images/img1.jpg" />
+            <Image url="@../../images/img1.jpg" />
          </image>
       </ImageView>
       <TextField fx:id="txtUsername" layoutX="373.0" layoutY="116.0" onKeyPressed="#onKeyPressed" prefHeight="39.0" prefWidth="258.0" promptText="Username">
