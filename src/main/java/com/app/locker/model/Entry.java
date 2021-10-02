@@ -1,5 +1,7 @@
 package com.app.locker.model;
 
+import com.app.locker.utils.classes.Crypto;
+
 public class Entry {
 
     private String service;
@@ -7,17 +9,19 @@ public class Entry {
     private String password;
     private String email;
     private String created;
+    private Crypto crypto;
 
     public Entry(String service, String username, String password, String email, String created) {
+        this();
         this.service = service;
         this.username = username;
-        this.password = password;
+        setPassword(password);
         this.email = email;
         this.created = created;
     }
 
     public Entry(){
-
+        crypto = new Crypto();
     }
 
     public String getService() {
@@ -37,11 +41,11 @@ public class Entry {
     }
 
     public String getPassword() {
-        return password;
+        return crypto.decrypt(password);
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = crypto.encrypt(password);
     }
 
     public String getEmail() {

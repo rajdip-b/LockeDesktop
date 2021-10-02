@@ -32,7 +32,7 @@ public class DBConnector {
         Statement statement = connection.createStatement();
         statement.execute("create schema locker");
         statement.execute("create table locker.user_details (username varchar(60) not null, password varchar(66) not null)");
-        statement.execute("create table locker.user_services (service varchar(60) not null unique, username varchar(66), password varchar(66) not null, email varchar(30), created varchar(60))");
+        statement.execute("create table locker.user_services (service varchar(60) not null unique, username varchar(66), password varchar(700) not null, email varchar(30), created varchar(60))");
     }
 
     public void createNewUser(String username, String password) throws SQLException{
