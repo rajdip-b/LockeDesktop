@@ -83,6 +83,15 @@ public class DBConnector {
         preparedStatement.executeUpdate();
     }
 
+    public void updateEntry(Entry entry) throws SQLException{
+        PreparedStatement preparedStatement = connection.prepareStatement("update locker.user_services set username = ?, password = ?, email = ? where service = ?");
+        preparedStatement.setString(1, entry.getUsername());
+        preparedStatement.setString(2, entry.getPassword());
+        preparedStatement.setString(3, entry.getEmail());
+        preparedStatement.setString(4, entry.getService());
+        preparedStatement.executeUpdate();
+    }
+
     public String getPassword() throws SQLException{
         Statement statement = connection.createStatement();
         ResultSet rs = statement.executeQuery("select password from locker.user_details");

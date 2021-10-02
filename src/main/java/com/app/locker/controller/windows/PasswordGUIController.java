@@ -2,6 +2,7 @@ package com.app.locker.controller.windows;
 
 import com.app.locker.controller.popups.AddItemPopupController;
 import com.app.locker.controller.popups.DeleteItemPopupController;
+import com.app.locker.controller.popups.EditItemPopupController;
 import com.app.locker.model.Entry;
 import com.app.locker.utils.classes.DBConnector;
 import com.app.locker.utils.interfaces.TableEventListener;
@@ -78,6 +79,23 @@ public class PasswordGUIController implements TableEventListener {
 
     @FXML
     public void onEditClicked(){
+        anchorPane.setDisable(true);
+        Parent root = null;
+        try{
+            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/popups/EditItemPopup.fxml")));
+        }catch (IOException e){
+            System.out.println("Resource missing: EditItemPopup.fxml");
+            System.exit(1);
+        }
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Edit item");
+        stage.setResizable(false);
+        stage.setOnCloseRequest(event -> {
+            anchorPane.setDisable(false);
+        });
+        stage.show();
+        EditItemPopupController.addTableEventListener(this);
     }
 
     @FXML
@@ -152,8 +170,16 @@ public class PasswordGUIController implements TableEventListener {
     }
 
     @Override
-    public void onItemEdited(Entry entry) {
-        System.out.println(entry.toString());
+    public void onItemEdited(Entry oldEntry, Entry newEntry) {
+        try{
+            dbConnector.updateEntry(newEntry);
+            entries.set(entries.indexOf(oldEntry), newEntry);
+            new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
+        }catch (SQLException e){
+            System.out.println("Error accessing/writing to database");
+            new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
+            System.exit(1);
+        }
     }
 
     @Override

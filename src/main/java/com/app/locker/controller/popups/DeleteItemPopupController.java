@@ -35,6 +35,8 @@ public class DeleteItemPopupController {
 
     @FXML
     public void onDeleteClicked(){
-        tableEventListener.onItemDeleted(entries.get(comboBox.getSelectionModel().getSelectedIndex()));
+        int selectionIndex = comboBox.getSelectionModel().getSelectedIndex();
+        services.remove(selectionIndex);
+        tableEventListener.onItemDeleted(entries.get(selectionIndex));
     }
 }
