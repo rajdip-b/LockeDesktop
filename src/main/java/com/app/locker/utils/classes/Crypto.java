@@ -2,6 +2,7 @@ package com.app.locker.utils.classes;
 
 import javax.crypto.Cipher;
 import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.KeyFactory;
@@ -19,11 +20,10 @@ public class Crypto {
 
     public Crypto(){
         try{
-            File publicKeyFile = new File("src/main/resources/keys/public.key");
-            File privateKeyFile = new File("src/main/resources/keys/private.key");
-
-            byte[] publicKeyBytes = Files.readAllBytes(publicKeyFile.toPath());
-            byte[] privateKeyBytes = Files.readAllBytes(privateKeyFile.toPath());
+            InputStream publicKeyStream = getClass().getResourceAsStream("/keys/public.key");
+            InputStream privateKeyStream = getClass().getResourceAsStream("/keys/private.key");
+            byte[] publicKeyBytes =  publicKeyStream.readAllBytes();
+            byte[] privateKeyBytes = privateKeyStream.readAllBytes();
 
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
