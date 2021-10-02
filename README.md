@@ -1,5 +1,5 @@
 # LockerDesktop
-An app vault application for desktops. Remember just one password and create as many as you want without the need of remembering, just put it int his app and it would do the work for you.
+An app vault application for desktops. Remember just one password and create as many as you want without the need of remembering, just put it in this app, and it would do the work for you.
 
 # Environment setup -
 1. This project uses Maven framework for building the app.
@@ -14,3 +14,10 @@ An app vault application for desktops. Remember just one password and create as 
 
 # Contributions -
 Any kind of contribution to this project is most welcome, just drop a comment if you want to get started.
+
+# Running the jar files - 
+java --module-path /path/to/javafx/lib --add-modules javafx.base,javafx.fxml,javafx.controls  -jar Locker.jar
+
+# Running the release files - 
+Currently, the project only supports the linux version of release. Feel free to add other OS versions (I'm too lazy).
+For linux users, just run ./locker
