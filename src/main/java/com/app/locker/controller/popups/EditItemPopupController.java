@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
@@ -95,6 +97,18 @@ public class EditItemPopupController {
         txtUsername.setText(entry.getUsername());
         vBoxTxtFields.setDisable(false);
         vBoxLabels.setDisable(false);
+    }
+
+    @FXML
+    public void onEscapePressed(KeyEvent keyEvent){
+        if (keyEvent.getCode() == KeyCode.ESCAPE)
+            tableEventListener.onPopupCloseRequested();
+    }
+
+    @FXML
+    public void onEnterClicked(KeyEvent keyEvent){
+        if (keyEvent.getCode() == KeyCode.ENTER)
+            onApplyClicked();
     }
 
 }

@@ -106,7 +106,7 @@ public class Main extends Application implements WindowEventListener {
         }
         stage.setScene(new Scene(root));
         stage.setResizable(false);
-        stage.setTitle("Log In");
+        stage.setTitle("Locker");
         stage.setOnCloseRequest(event -> {
             System.exit(1);
         });
@@ -149,6 +149,7 @@ public class Main extends Application implements WindowEventListener {
 
     @Override
     public void onDatabaseResetRequested() {
-        System.exit(1);
+        deleteDatabase(new File("database/"));
+        loadSignup();
     }
 }

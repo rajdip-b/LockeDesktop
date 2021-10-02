@@ -6,6 +6,7 @@ import com.app.locker.controller.popups.EditItemPopupController;
 import com.app.locker.model.Entry;
 import com.app.locker.utils.classes.DBConnector;
 import com.app.locker.utils.interfaces.TableEventListener;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,7 +15,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -25,21 +26,22 @@ import java.util.Objects;
 
 public class PasswordGUIController implements TableEventListener {
 
-    @FXML AnchorPane anchorPane;
+    @FXML VBox vBoxButtons;
     @FXML TableView<Entry> table;
     @FXML TableColumn<Entry, String> colService;
     @FXML TableColumn<Entry, String> colUsername;
     @FXML TableColumn<Entry, String> colPassword;
     @FXML TableColumn<Entry, String> colEmail;
     @FXML TableColumn<Entry, String> colCreated;
-    @FXML Button btnHidden;
 
     public static ObservableList<Entry> entries;
     private DBConnector dbConnector;
+    private Stage currentStage;
 
     @FXML
     public void initialize(){
         dbConnector = new DBConnector();
+        currentStage = null;
         try{
             dbConnector.setConnectionWithoutCreate();
         }catch (SQLException e){
@@ -58,7 +60,7 @@ public class PasswordGUIController implements TableEventListener {
 
     @FXML
     public void onAddClicked(){
-        anchorPane.setDisable(true);
+        vBoxButtons.setDisable(true);
         Parent root = null;
         try{
             root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/popups/AddItemPopup.fxml")));
@@ -71,15 +73,16 @@ public class PasswordGUIController implements TableEventListener {
         stage.setTitle("Add item");
         stage.setResizable(false);
         stage.setOnCloseRequest(event -> {
-            anchorPane.setDisable(false);
+            vBoxButtons.setDisable(false);
         });
+        currentStage = stage;
         stage.show();
         AddItemPopupController.addTableEventListener(this);
     }
 
     @FXML
     public void onEditClicked(){
-        anchorPane.setDisable(true);
+        vBoxButtons.setDisable(true);
         Parent root = null;
         try{
             root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/popups/EditItemPopup.fxml")));
@@ -92,15 +95,16 @@ public class PasswordGUIController implements TableEventListener {
         stage.setTitle("Edit item");
         stage.setResizable(false);
         stage.setOnCloseRequest(event -> {
-            anchorPane.setDisable(false);
+            vBoxButtons.setDisable(false);
         });
+        currentStage = stage;
         stage.show();
         EditItemPopupController.addTableEventListener(this);
     }
 
     @FXML
     public void onDeleteClicked(){
-        anchorPane.setDisable(true);
+        vBoxButtons.setDisable(true);
         Parent root = null;
         try{
             root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/popups/DeleteItemPopup.fxml")));
@@ -113,8 +117,9 @@ public class PasswordGUIController implements TableEventListener {
         stage.setTitle("Delete item");
         stage.setResizable(false);
         stage.setOnCloseRequest(event -> {
-            anchorPane.setDisable(false);
+            vBoxButtons.setDisable(false);
         });
+        currentStage = stage;
         stage.show();
         DeleteItemPopupController.addTableEventListener(this);
     }
@@ -126,6 +131,7 @@ public class PasswordGUIController implements TableEventListener {
         if (a.getResult() == ButtonType.YES) {
             try {
                 dbConnector.deleteAllEntries();
+                new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
             } catch (SQLException e) {
                 System.out.println("Error accessing/writing to database!");
             }
@@ -134,7 +140,7 @@ public class PasswordGUIController implements TableEventListener {
     }
 
     @FXML
-    public void onHiddenClicked(){
+    public void onRefreshClicked(){
         entries.clear();
         ArrayList<Entry> existingEntries = null;
         try {
@@ -157,6 +163,7 @@ public class PasswordGUIController implements TableEventListener {
         try{
             dbConnector.addData(entry);
             entries.add(entry);
+            new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
         }
         catch (SQLIntegrityConstraintViolationException e){
             System.out.println("Duplicate field value detected!");
@@ -187,10 +194,18 @@ public class PasswordGUIController implements TableEventListener {
         try{
             dbConnector.deleteEntry(entry);
             entries.remove(entry);
+            new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
         }catch (SQLException e){
             System.out.println("Error accessing/writing to database!");
             new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
             System.exit(1);
         }
     }
+
+    @Override
+    public void onPopupCloseRequested() {
+        currentStage.close();
+        vBoxButtons.setDisable(false);
+    }
+
 }

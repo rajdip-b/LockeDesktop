@@ -5,6 +5,7 @@ import com.app.locker.utils.interfaces.WindowEventListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -17,20 +18,25 @@ import java.sql.SQLException;
 public class LoginGUIController {
 
     @FXML private PasswordField txtPassword;
+    @FXML private Label lblWelcome;
 
     private DBConnector dbConnector;
     private static WindowEventListener windowEventListener;
+    private String username;
 
     @FXML
     public void initialize(){
+        username = null;
         dbConnector = new DBConnector();
         try{
             dbConnector.setConnectionWithoutCreate();
+            username = dbConnector.getName();
         }catch (SQLException e){
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
             System.exit(1);
         }
+        lblWelcome.setText("Welcome "+ username + "!");
     }
 
     public static void addWindowEventListener(WindowEventListener windowEventListener){
@@ -69,7 +75,7 @@ public class LoginGUIController {
         try{
             dbPassword = dbConnector.getPassword();
         }catch (SQLException e){
-            e.printStackTrace();
+            System.out.println("Error accessing database!");
             new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
             System.exit(1);
         }
@@ -77,7 +83,6 @@ public class LoginGUIController {
             Alert a = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to reset all the settings? This option is irreversible.", ButtonType.YES, ButtonType.NO);
             a.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.YES){
-                    deleteDatabase(new File("database/"));
                     windowEventListener.onDatabaseResetRequested();
                 }
             });

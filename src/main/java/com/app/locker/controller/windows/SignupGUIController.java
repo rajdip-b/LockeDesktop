@@ -32,11 +32,9 @@ public class SignupGUIController {
     public void initialize(){
         dbConnector = new DBConnector();
         try {
-            dbConnector.setConnectionWithoutCreate();
+            dbConnector.setConnectionWithCreate();
         }catch (SQLException e){
             e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "Fatal error!").showAndWait();
-            System.exit(1);
         }
     }
 

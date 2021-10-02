@@ -22,13 +22,9 @@ public class DBConnector {
     }
 
     // Creates a derby db if the database doesnt exist;
-    public void setConnectionWithCreate() {
-        try{
-            connection = DriverManager.getConnection("jdbc:derby:database;create=true;");
-            createTables();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+    public void setConnectionWithCreate() throws SQLException{
+        connection = DriverManager.getConnection("jdbc:derby:database;create=true;");
+        createTables();
     }
 
     // Creates the default tables in the DB
@@ -90,6 +86,16 @@ public class DBConnector {
         preparedStatement.setString(3, entry.getEmail());
         preparedStatement.setString(4, entry.getService());
         preparedStatement.executeUpdate();
+    }
+
+    public String getName() throws SQLException{
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery("select username from locker.user_details");
+        String username = null;
+        while(rs.next()){
+            username = rs.getString(1);
+        }
+        return  username;
     }
 
     public String getPassword() throws SQLException{

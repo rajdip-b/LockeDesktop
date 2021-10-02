@@ -9,8 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane prefHeight="538.0" prefWidth="624.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.locker.controller.popups.EditItemPopupController">
+<AnchorPane onKeyPressed="#onEscapePressed" prefHeight="538.0" prefWidth="624.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.locker.controller.popups.EditItemPopupController">
    <children>
       <Label layoutX="14.0" prefHeight="40.0" prefWidth="206.0" text="Edit Item">
          <font>
@@ -20,9 +19,9 @@
       <VBox fx:id="vBoxTxtFields" layoutX="225.0" layoutY="192.0" prefHeight="262.0" prefWidth="288.0" spacing="15.0">
          <children>
             <TextField fx:id="txtService" prefHeight="40.0" prefWidth="279.0" />
-            <TextField fx:id="txtUsername" prefHeight="40.0" prefWidth="279.0" />
-            <TextField fx:id="txtPassword" prefHeight="40.0" prefWidth="279.0" />
-            <TextField fx:id="txtEmail" prefHeight="40.0" prefWidth="279.0" />
+            <TextField fx:id="txtUsername" onKeyPressed="#onEnterClicked" prefHeight="40.0" prefWidth="279.0" />
+            <TextField fx:id="txtPassword" onKeyPressed="#onEnterClicked" prefHeight="40.0" prefWidth="279.0" />
+            <TextField fx:id="txtEmail" onKeyPressed="#onEnterClicked" prefHeight="40.0" prefWidth="279.0" />
             <TextField fx:id="txtCreated" prefHeight="40.0" prefWidth="279.0" />
          </children>
       </VBox>
@@ -70,7 +69,7 @@
             </Label>
          </children>
       </VBox>
-      <Button layoutX="382.0" layoutY="484.0" mnemonicParsing="false" onAction="#onApplyClicked" prefHeight="40.0" prefWidth="131.0" text="Apply" />
+      <Button layoutX="384.0" layoutY="484.0" mnemonicParsing="false" onAction="#onApplyClicked" prefHeight="40.0" prefWidth="129.0" text="Apply" />
       <ComboBox fx:id="comboBox" layoutX="111.0" layoutY="100.0" onAction="#onItemSelected" prefHeight="40.0" prefWidth="402.0" promptText="Select an item" />
    </children>
 </AnchorPane>

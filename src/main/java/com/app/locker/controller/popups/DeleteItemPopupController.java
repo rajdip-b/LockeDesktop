@@ -7,6 +7,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 import java.util.ArrayList;
 
@@ -36,7 +38,22 @@ public class DeleteItemPopupController {
     @FXML
     public void onDeleteClicked(){
         int selectionIndex = comboBox.getSelectionModel().getSelectedIndex();
-        services.remove(selectionIndex);
+        try{
+            services.remove(selectionIndex);
+        }catch (ArrayIndexOutOfBoundsException ignored){
+        }
         tableEventListener.onItemDeleted(entries.get(selectionIndex));
+    }
+
+    @FXML
+    public void onEscapePressed(KeyEvent keyEvent){
+        if (keyEvent.getCode() == KeyCode.ESCAPE)
+            tableEventListener.onPopupCloseRequested();
+    }
+
+    @FXML
+    public void onEnterClicked(KeyEvent keyEvent){
+        if (keyEvent.getCode() == KeyCode.ENTER)
+            onDeleteClicked();
     }
 }
