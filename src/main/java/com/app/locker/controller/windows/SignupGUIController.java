@@ -33,8 +33,7 @@ public class SignupGUIController {
         dbConnector = new DBConnector();
         try {
             dbConnector.setConnectionWithCreate();
-        }catch (SQLException e){
-            e.printStackTrace();
+        }catch (SQLException ignored){
         }
     }
 

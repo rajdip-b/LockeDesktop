@@ -26,13 +26,13 @@ import java.util.Objects;
 
 public class PasswordGUIController implements TableEventListener {
 
-    @FXML VBox vBoxButtons;
-    @FXML TableView<Entry> table;
-    @FXML TableColumn<Entry, String> colService;
-    @FXML TableColumn<Entry, String> colUsername;
-    @FXML TableColumn<Entry, String> colPassword;
-    @FXML TableColumn<Entry, String> colEmail;
-    @FXML TableColumn<Entry, String> colCreated;
+    @FXML private VBox vBoxButtons;
+    @FXML private TableView<Entry> table;
+    @FXML private TableColumn<Entry, String> colService;
+    @FXML private TableColumn<Entry, String> colUsername;
+    @FXML private TableColumn<Entry, String> colPassword;
+    @FXML private TableColumn<Entry, String> colEmail;
+    @FXML private TableColumn<Entry, String> colCreated;
 
     public static ObservableList<Entry> entries;
     private DBConnector dbConnector;
@@ -56,6 +56,7 @@ public class PasswordGUIController implements TableEventListener {
         colEmail.setCellValueFactory(new PropertyValueFactory<Entry, String>("email"));
         colCreated.setCellValueFactory(new PropertyValueFactory<Entry, String>("created"));
         table.setItems(entries);
+        loadExistingEntries();
     }
 
     @FXML
@@ -139,8 +140,7 @@ public class PasswordGUIController implements TableEventListener {
         entries.clear();
     }
 
-    @FXML
-    public void onRefreshClicked(){
+    private void loadExistingEntries(){
         entries.clear();
         ArrayList<Entry> existingEntries = null;
         try {
