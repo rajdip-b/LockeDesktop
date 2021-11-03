@@ -4,7 +4,7 @@ import com.app.locker.controller.popups.AddItemPopupController;
 import com.app.locker.controller.popups.DeleteItemPopupController;
 import com.app.locker.controller.popups.EditItemPopupController;
 import com.app.locker.model.Entry;
-import com.app.locker.utils.classes.DBConnector;
+import com.app.locker.utils.classes.logic.DBConnector;
 import com.app.locker.utils.interfaces.TableEventListener;
 
 import javafx.collections.FXCollections;

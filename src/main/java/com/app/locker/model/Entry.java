@@ -1,6 +1,6 @@
 package com.app.locker.model;
 
-import com.app.locker.utils.classes.Crypto;
+import com.app.locker.utils.classes.logic.Crypto;
 
 public class Entry {
 

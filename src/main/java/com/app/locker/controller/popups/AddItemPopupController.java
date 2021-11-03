@@ -2,6 +2,9 @@ package com.app.locker.controller.popups;
 
 import com.app.locker.controller.windows.PasswordGUIController;
 import com.app.locker.model.Entry;
+import com.app.locker.utils.classes.core.AppProperties;
+import com.app.locker.utils.classes.logic.View;
+import com.app.locker.utils.interfaces.EventListener;
 import com.app.locker.utils.interfaces.TableEventListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -11,7 +14,7 @@ import javafx.scene.input.KeyEvent;
 
 import java.util.Date;
 
-public class AddItemPopupController {
+public class AddItemPopupController extends View {
 
     @FXML TextField txtService;
     @FXML TextField txtUsername;
@@ -20,9 +23,14 @@ public class AddItemPopupController {
 
     private static TableEventListener tableEventListener = null;
 
+    public AddItemPopupController(EventListener eventListener) {
+        super(eventListener);
+    }
+
     public static void addTableEventListener(TableEventListener tableEventListener){
         AddItemPopupController.tableEventListener = tableEventListener;
     }
+
 
     @FXML
     public void onAddClicked(){
@@ -65,4 +73,13 @@ public class AddItemPopupController {
             onAddClicked();
     }
 
+    @Override
+    public void initializeView() {
+
+    }
+
+    @Override
+    public String getResourcePath() {
+        return AppProperties.PATH_ADD_ITEM_POPUP;
+    }
 }

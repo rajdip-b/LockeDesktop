@@ -1,4 +1,4 @@
-package com.app.locker.utils.classes;
+package com.app.locker.utils.classes.logic;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;

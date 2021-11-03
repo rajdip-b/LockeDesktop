@@ -6,10 +6,15 @@ module com.app.locker {
     requires org.apache.derby.client;
     requires org.apache.derby.commons;
     requires org.apache.derby.engine;
-    requires org.apache.derby.runner;
-    requires org.apache.derby.tools;
+    requires java.desktop;
     exports com.app.locker;
-    opens com.app.locker.controller.windows;
+    exports com.app.locker.controller;
+    opens com.app.locker.controller;
+    exports com.app.locker.utils.interfaces;
+    opens com.app.locker.utils.interfaces;
+    exports com.app.locker.controller.fragments;
+    opens com.app.locker.controller.fragments;
+    exports com.app.locker.model;
     opens com.app.locker.model;
     exports com.app.locker.controller.popups;
     opens com.app.locker.controller.popups;

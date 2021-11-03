@@ -17,7 +17,3 @@ Any kind of contribution to this project is most welcome, just drop a comment if
 
 # Running the jar files - 
 java --module-path /path/to/javafx/lib --add-modules javafx.base,javafx.fxml,javafx.controls  -jar Locker.jar
-
-# Running the release files - 
-Currently, the project only supports the linux version of release. Feel free to add other OS versions (I'm too lazy).
-For linux users, just run ./locker

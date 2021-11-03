@@ -2,7 +2,7 @@ package com.app.locker;
 
 import com.app.locker.controller.windows.LoginGUIController;
 import com.app.locker.controller.windows.SignupGUIController;
-import com.app.locker.utils.classes.DBConnector;
+import com.app.locker.utils.classes.logic.DBConnector;
 import com.app.locker.utils.interfaces.WindowEventListener;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -11,10 +11,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class Main extends Application implements WindowEventListener {

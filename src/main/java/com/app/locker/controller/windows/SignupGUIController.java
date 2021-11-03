@@ -1,19 +1,18 @@
 package com.app.locker.controller.windows;
 
-import com.app.locker.utils.classes.DBConnector;
+import com.app.locker.utils.classes.logic.DBConnector;
 import com.app.locker.utils.interfaces.WindowEventListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.sql.SQLException;
 
-import static com.app.locker.utils.classes.Hash.toSHA256;
+import static com.app.locker.utils.classes.logic.Hash.toSHA256;
 
 public class SignupGUIController {
 
