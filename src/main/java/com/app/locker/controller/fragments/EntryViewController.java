@@ -62,10 +62,11 @@ public class EntryViewController extends View {
     }
 
     public void setEntry(Entry entry){
-        this.entry = entry;
+        this.entry.updateEntry(entry);
         txtUsername.setText(entry.getUsername());
         txtEmail.setText(entry.getEmail());
         txtPassword.setText(entry.getPassword());
+        checkBoxSelect.setSelected(false);
     }
 
     @FXML

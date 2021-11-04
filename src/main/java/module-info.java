@@ -8,8 +8,6 @@ module com.app.locker {
     requires org.apache.derby.engine;
     requires java.desktop;
     exports com.app.locker;
-    exports com.app.locker.controller;
-    opens com.app.locker.controller;
     exports com.app.locker.utils.interfaces;
     opens com.app.locker.utils.interfaces;
     exports com.app.locker.controller.fragments;
@@ -18,4 +16,6 @@ module com.app.locker {
     opens com.app.locker.model;
     exports com.app.locker.controller.popups;
     opens com.app.locker.controller.popups;
+    exports com.app.locker.controller.windows;
+    opens com.app.locker.controller.windows;
 }

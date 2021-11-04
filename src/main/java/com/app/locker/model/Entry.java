@@ -24,6 +24,12 @@ public class Entry {
         crypto = new Crypto();
     }
 
+    public void updateEntry(Entry entry){
+        setUsername(entry.getUsername());
+        setPassword(entry.getPassword());
+        setEmail(entry.getEmail());
+    }
+
     public String getService() {
         return service;
     }

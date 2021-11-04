@@ -23,19 +23,12 @@ public class EditItemPopupController {
     @FXML TextField txtEmail;
     @FXML TextField txtCreated;
 
-    @FXML VBox vBoxTxtFields;
-    @FXML VBox vBoxLabels;
-
-    @FXML ComboBox<String> comboBox;
-
     private String existingUsername;
     private String existingPassword;
     private String existingEmail;
-    private int selectionIndex;
+    private static Entry entry;
 
     private static TableEventListener tableEventListener;
-    private ObservableList<String> services;
-    private ArrayList<Entry> entries;
 
     public static void addTableEventListener(TableEventListener tableEventListener){
         EditItemPopupController.tableEventListener = tableEventListener;
@@ -43,20 +36,17 @@ public class EditItemPopupController {
 
     @FXML
     public void initialize(){
-        existingEmail = null;
-        existingPassword = null;
-        existingUsername = null;
-        vBoxLabels.setDisable(true);
-        vBoxTxtFields.setDisable(true);
+        this.entry = PasswordGUIController.currentSelectedEntry;
+        existingPassword = entry.getPassword();
+        existingEmail = entry.getEmail();
+        existingUsername = entry.getUsername();
+        txtService.setText(entry.getService());
+        txtCreated.setText(entry.getCreated());
+        txtEmail.setText(entry.getEmail());
+        txtPassword.setText(entry.getPassword());
+        txtUsername.setText(entry.getUsername());
         txtCreated.setDisable(true);
         txtService.setDisable(true);
-        services = FXCollections.observableArrayList();
-        entries = new ArrayList<>();
-        for (Entry entry : PasswordGUIController.entries) {
-            services.add(entry.getService());
-            entries.add(entry);
-        }
-        comboBox.setItems(services);
     }
 
     @FXML
@@ -74,29 +64,12 @@ public class EditItemPopupController {
         }
         if (newUsername.equals(""))
             newUsername = "None";
-        Entry entry = entries.get(selectionIndex);
         Entry oldEntry = entry;
         entry.setEmail(newEmail);
         entry.setPassword(newPassword);
         entry.setUsername(newUsername);
         if (!newEmail.equals(existingEmail) || !newPassword.equals(existingPassword) || !newUsername.equals(existingUsername))
             tableEventListener.onItemEdited(oldEntry, entry);
-    }
-
-    @FXML
-    public void onItemSelected(){
-        selectionIndex = comboBox.getSelectionModel().getSelectedIndex();
-        Entry entry = entries.get(selectionIndex);
-        existingPassword = entry.getPassword();
-        existingEmail = entry.getEmail();
-        existingUsername = entry.getUsername();
-        txtService.setText(entry.getService());
-        txtCreated.setText(entry.getCreated());
-        txtEmail.setText(entry.getEmail());
-        txtPassword.setText(entry.getPassword());
-        txtUsername.setText(entry.getUsername());
-        vBoxTxtFields.setDisable(false);
-        vBoxLabels.setDisable(false);
     }
 
     @FXML

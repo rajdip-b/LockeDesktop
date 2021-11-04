@@ -12,7 +12,7 @@ public class HBoxFillInTransition {
     public HBoxFillInTransition(Shape shape){
         hBoxFillInTransition = new FillTransition(Duration.millis(200));
         hBoxFillInTransition.setFromValue(Color.WHITE);
-        hBoxFillInTransition.setToValue(Color.rgb(224, 11, 11));
+        hBoxFillInTransition.setToValue(Color.rgb(125, 125, 125));
         hBoxFillInTransition.setCycleCount(1);
         hBoxFillInTransition.setShape(shape);
     }

@@ -11,6 +11,22 @@ import java.util.Objects;
 
 public class UIManager {
 
+    public Stage getAddItemPopupStage(){
+        Parent root = null;
+        try{
+            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/popups/AddItemPopup.fxml")));
+        }catch (IOException e){
+            System.out.println("Resource missing: AddItemPopup.fxml");
+            e.printStackTrace();
+            System.exit(1);
+        }
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Add item");
+        stage.setResizable(false);
+        return stage;
+    }
+
     public Stage getPasswordTableStage(){
         Stage stage = new Stage();
         Parent root = null;

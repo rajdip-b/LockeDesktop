@@ -1,211 +1,268 @@
 package com.app.locker.controller.windows;
 
+import com.app.locker.controller.fragments.EntryViewController;
+import com.app.locker.controller.fragments.SidebarCollapsedViewController;
+import com.app.locker.controller.fragments.SidebarExpandedViewController;
 import com.app.locker.controller.popups.AddItemPopupController;
-import com.app.locker.controller.popups.DeleteItemPopupController;
 import com.app.locker.controller.popups.EditItemPopupController;
 import com.app.locker.model.Entry;
-import com.app.locker.utils.classes.logic.DBConnector;
+import com.app.locker.utils.classes.core.AppProperties;
+import com.app.locker.utils.classes.core.ObjectHolder;
+import com.app.locker.utils.classes.logic.View;
+import com.app.locker.utils.interfaces.EntryEventListener;
+import com.app.locker.utils.interfaces.EventListener;
+import com.app.locker.utils.interfaces.SidebarEventListener;
 import com.app.locker.utils.interfaces.TableEventListener;
-
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
-public class PasswordGUIController implements TableEventListener {
+import static com.app.locker.utils.classes.core.ObjectHolder.*;
 
-    @FXML private VBox vBoxButtons;
-    @FXML private TableView<Entry> table;
-    @FXML private TableColumn<Entry, String> colService;
-    @FXML private TableColumn<Entry, String> colUsername;
-    @FXML private TableColumn<Entry, String> colPassword;
-    @FXML private TableColumn<Entry, String> colEmail;
-    @FXML private TableColumn<Entry, String> colCreated;
+public class PasswordGUIController implements SidebarEventListener, EntryEventListener, TableEventListener {
 
-    public static ObservableList<Entry> entries;
-    private DBConnector dbConnector;
+    public static Entry currentSelectedEntry;
+    @FXML private Pane sidebarPane;
+    @FXML private VBox mainViewPane;
+    @FXML private VBox entryBox;
+
+    private SidebarCollapsedViewController sidebarCollapsedViewController;
+    private SidebarExpandedViewController sidebarExpandedViewController;
+
+    private ObservableList<EntryViewController> entryViewsSelected;
+    private ObservableList<Entry> entries;
+    private ObservableList<EntryViewController> entryViews;
+
     private Stage currentStage;
+//
+//    public PasswordGUIController(EventListener eventListener) {
+//        super(eventListener);
+//    }
 
     @FXML
     public void initialize(){
-        dbConnector = new DBConnector();
-        currentStage = null;
-        try{
-            dbConnector.setConnectionWithoutCreate();
-        }catch (SQLException e){
-            System.out.println("Error accessing database!");
-            new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
-            System.exit(1);
-        }
         entries = FXCollections.observableArrayList();
-        colService.setCellValueFactory(new PropertyValueFactory<Entry, String>("service"));
-        colUsername.setCellValueFactory(new PropertyValueFactory<Entry, String>("username"));
-        colPassword.setCellValueFactory(new PropertyValueFactory<Entry, String>("password"));
-        colEmail.setCellValueFactory(new PropertyValueFactory<Entry, String>("email"));
-        colCreated.setCellValueFactory(new PropertyValueFactory<Entry, String>("created"));
-        table.setItems(entries);
-        loadExistingEntries();
-    }
-
-    @FXML
-    public void onAddClicked(){
-        vBoxButtons.setDisable(true);
-        Parent root = null;
-        try{
-            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/popups/AddItemPopup.fxml")));
-        }catch (IOException e){
-            System.out.println("Resource missing: AddItemPopup.fxml");
-            System.exit(1);
-        }
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root));
-        stage.setTitle("Add item");
-        stage.setResizable(false);
-        stage.setOnCloseRequest(event -> {
-            vBoxButtons.setDisable(false);
-        });
-        currentStage = stage;
-        stage.show();
-        AddItemPopupController.addTableEventListener(this);
-    }
-
-    @FXML
-    public void onEditClicked(){
-        vBoxButtons.setDisable(true);
-        Parent root = null;
-        try{
-            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/popups/EditItemPopup.fxml")));
-        }catch (IOException e){
-            System.out.println("Resource missing: EditItemPopup.fxml");
-            System.exit(1);
-        }
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root));
-        stage.setTitle("Edit item");
-        stage.setResizable(false);
-        stage.setOnCloseRequest(event -> {
-            vBoxButtons.setDisable(false);
-        });
-        currentStage = stage;
-        stage.show();
-        EditItemPopupController.addTableEventListener(this);
-    }
-
-    @FXML
-    public void onDeleteClicked(){
-        vBoxButtons.setDisable(true);
-        Parent root = null;
-        try{
-            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/popups/DeleteItemPopup.fxml")));
-        }catch (IOException e){
-            System.out.println("Resource missing: DeleteItemPopup.fxml");
-            System.exit(1);
-        }
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root));
-        stage.setTitle("Delete item");
-        stage.setResizable(false);
-        stage.setOnCloseRequest(event -> {
-            vBoxButtons.setDisable(false);
-        });
-        currentStage = stage;
-        stage.show();
-        DeleteItemPopupController.addTableEventListener(this);
-    }
-
-    @FXML
-    public void onDeleteAllClicked(){
-        Alert a = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure? This can't be undone!", ButtonType.YES, ButtonType.CANCEL);
-        a.showAndWait();
-        if (a.getResult() == ButtonType.YES) {
-            try {
-                dbConnector.deleteAllEntries();
-                new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
-            } catch (SQLException e) {
-                System.out.println("Error accessing/writing to database!");
+        entryViewsSelected = FXCollections.observableArrayList();
+        entryViews = FXCollections.observableArrayList();
+        sidebarCollapsedViewController = new SidebarCollapsedViewController(this);
+        sidebarExpandedViewController = new SidebarExpandedViewController(this);
+        sidebarPane.getChildren().add(sidebarCollapsedViewController.getView());
+        sidebarCollapsedViewController.enableButtonEdit(false);
+        sidebarCollapsedViewController.enableButtonDelete(false);
+        sidebarExpandedViewController.enableButtonDelete(false);
+        sidebarExpandedViewController.enableButtonEdit(false);
+        entryViewsSelected.addListener((ListChangeListener<EntryViewController>) c -> {
+            int size = entryViewsSelected.size();
+            if (size == 0){
+                sidebarCollapsedViewController.enableButtonDelete(false);
+                sidebarCollapsedViewController.enableButtonEdit(false);
+                sidebarExpandedViewController.enableButtonDelete(false);
+                sidebarExpandedViewController.enableButtonEdit(false);
+            } else if (size == 1){
+                sidebarCollapsedViewController.enableButtonDelete(true);
+                sidebarCollapsedViewController.enableButtonEdit(true);
+                sidebarExpandedViewController.enableButtonDelete(true);
+                sidebarExpandedViewController.enableButtonEdit(true);
+            } else {
+                sidebarCollapsedViewController.enableButtonDelete(true);
+                sidebarCollapsedViewController.enableButtonEdit(false);
+                sidebarExpandedViewController.enableButtonDelete(true);
+                sidebarExpandedViewController.enableButtonEdit(false);
             }
+        });
+//        loadExistingEntries();
+    }
+
+    public void addEntryViewToDisplay(EntryViewController entryViewController){
+        entryBox.getChildren().add(entryViewController.getView());
+    }
+
+    public void removeEntryViewFromDisplay(EntryViewController entryViewController){
+        entryBox.getChildren().remove(entryViewController.getView());
+    }
+
+    @Override
+    public void onCollapseSidebar() {
+        mainViewPane.setPrefWidth(mainViewPane.getWidth()+165);
+        sidebarPane.setPrefWidth(sidebarPane.getWidth()-165);
+        sidebarPane.getChildren().clear();
+        sidebarPane.getChildren().add(sidebarCollapsedViewController.getView());
+    }
+
+    @Override
+    public void onExpandSidebar() {
+        mainViewPane.setPrefWidth(mainViewPane.getWidth()-165);
+        sidebarPane.setPrefWidth(sidebarPane.getWidth()+165);
+        sidebarPane.getChildren().clear();
+        sidebarPane.getChildren().add(sidebarExpandedViewController.getView());
+    }
+
+    @Override
+    public void onAddClicked() {
+        if (currentStage == null){
+            Stage stage = getUiManager().getAddItemPopupStage();
+            stage.setOnCloseRequest(event -> onPopupCloseRequested());
+            currentStage = stage;
+            stage.show();
+            AddItemPopupController.addTableEventListener(this);
         }
-        entries.clear();
+    }
+//
+    @Override
+    public void onEditClicked() {
+        currentSelectedEntry = entryViewsSelected.get(0).getEntry();
+        if (currentStage == null){
+            Parent root = null;
+            try{
+                root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/popups/EditItemPopup.fxml")));
+            }catch (IOException e){
+                e.printStackTrace();
+                System.out.println("Resource missing: EditItemPopup.fxml");
+                System.exit(1);
+            }
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Edit item");
+            stage.setResizable(false);
+            stage.setOnCloseRequest(event -> {
+                onPopupCloseRequested();
+                currentSelectedEntry = null;
+            });
+            currentStage = stage;
+            stage.show();
+            EditItemPopupController.addTableEventListener(this);
+        }
+    }
+
+    @Override
+    public void onDeleteClicked() {
+        new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete the selected item(s)?", ButtonType.YES, ButtonType.NO).showAndWait().ifPresent(buttonType -> {
+            if (buttonType == ButtonType.YES){
+                for (EntryViewController entryViewController : entryViewsSelected) {
+                    entries.remove(entryViewController.getEntry());
+                    entryViews.remove(entryViewController);
+                    removeEntryViewFromDisplay(entryViewController);
+                }
+                entryViewsSelected.clear();
+            }
+        });
+    }
+
+    @Override
+    public void onDeleteAllClicked() {
+        new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete everything?", ButtonType.YES, ButtonType.NO).showAndWait().ifPresent(buttonType -> {
+            if (buttonType == ButtonType.YES){
+                entryBox.getChildren().clear();
+                entryViews.clear();
+                entries.clear();
+                entryViewsSelected.clear();
+//                getDbConnector().deleteAllEntries();
+            }
+        });
     }
 
     private void loadExistingEntries(){
-        entries.clear();
+        entryViews.clear();
         ArrayList<Entry> existingEntries = null;
         try {
-            existingEntries = dbConnector.getExistingData();
+            existingEntries = getDbConnector().getExistingData();
         } catch (SQLException e) {
             System.out.println("Error accessing/writing to database!");
             new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
             System.exit(1);
         }
-        if (existingEntries == null) {
-            new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
-            System.exit(1);
-            return;
+//        if (existingEntries == null) {
+//            new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
+//            System.exit(1);
+//            return;
+//        }
+        for (Entry entry : existingEntries){
+            EntryViewController entryViewController = new EntryViewController(this, entry);
+            entryViews.add(entryViewController);
         }
-        entries.addAll(existingEntries);
+    }
+
+    @Override
+    public void onGithubClicked() {
+        new Thread(() -> {
+            try {
+                Desktop desktop = java.awt.Desktop.getDesktop();
+                URI oURL = new URI(AppProperties.GITHUB_LINK);
+                desktop.browse(oURL);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    @Override
+    public void onEntrySelected(EntryViewController entryViewController) {
+        entryViewsSelected.add(entryViewController);
+    }
+
+    @Override
+    public void onEntryDeselected(EntryViewController entryViewController) {
+        entryViewsSelected.remove(entryViewController);
     }
 
     @Override
     public void onItemAdded(Entry entry) {
-        try{
-            dbConnector.addData(entry);
-            entries.add(entry);
-            new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
-        }
-        catch (SQLIntegrityConstraintViolationException e){
-            System.out.println("Duplicate field value detected!");
-            new Alert(Alert.AlertType.ERROR, "An entry with this service name already exists!").showAndWait();
-        }
-        catch (SQLException e){
-            System.out.println("Error accessing/writing to database");
-            new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
-            System.exit(1);
-        }
+        entries.add(entry);
+        EntryViewController entryViewController = new EntryViewController(this, entry);
+        entryViews.add(entryViewController);
+        addEntryViewToDisplay(entryViewController);
+        new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
     }
 
     @Override
     public void onItemEdited(Entry oldEntry, Entry newEntry) {
-        try{
-            dbConnector.updateEntry(newEntry);
-            entries.set(entries.indexOf(oldEntry), newEntry);
-            new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
-        }catch (SQLException e){
-            System.out.println("Error accessing/writing to database");
-            new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
-            System.exit(1);
+        entryViewsSelected.clear();
+        entries.set(entries.indexOf(oldEntry), newEntry);
+        for (EntryViewController e : entryViews){
+            if (e.getEntry().equals(oldEntry)){
+                e.setEntry(newEntry);
+                break;
+            }
         }
-    }
-
-    @Override
-    public void onItemDeleted(Entry entry) {
-        try{
-            dbConnector.deleteEntry(entry);
-            entries.remove(entry);
-            new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
-        }catch (SQLException e){
-            System.out.println("Error accessing/writing to database!");
-            new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
-            System.exit(1);
-        }
+        new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
     }
 
     @Override
     public void onPopupCloseRequested() {
         currentStage.close();
-        vBoxButtons.setDisable(false);
+        currentStage = null;
     }
 
+
+
+//    @Override
+//    public void initializeView() {
+//
+//    }
+
+//    @Override
+//    public String getResourcePath() {
+//        return AppProperties.PATH_PASSWORD_GUI;
+//    }
 }

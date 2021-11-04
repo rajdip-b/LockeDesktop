@@ -78,4 +78,29 @@ public class SidebarExpandedViewController extends View {
         sidebarEventListener.onCollapseSidebar();
     }
 
+    @FXML
+    public void onAddClicked(){
+        sidebarEventListener.onAddClicked();
+    }
+
+    @FXML
+    public void onEditClicked(){
+        sidebarEventListener.onEditClicked();
+    }
+
+    @FXML
+    public void onDeleteClicked(){
+        sidebarEventListener.onDeleteClicked();
+    }
+
+    @FXML
+    public void onDeleteAllClicked(){
+        sidebarEventListener.onDeleteAllClicked();
+    }
+
+    @FXML
+    public void onGithubClicked(){
+        sidebarEventListener.onGithubClicked();
+    }
+
 }

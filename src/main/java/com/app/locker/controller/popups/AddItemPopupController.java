@@ -14,7 +14,7 @@ import javafx.scene.input.KeyEvent;
 
 import java.util.Date;
 
-public class AddItemPopupController extends View {
+public class AddItemPopupController {
 
     @FXML TextField txtService;
     @FXML TextField txtUsername;
@@ -22,10 +22,6 @@ public class AddItemPopupController extends View {
     @FXML TextField txtEmail;
 
     private static TableEventListener tableEventListener = null;
-
-    public AddItemPopupController(EventListener eventListener) {
-        super(eventListener);
-    }
 
     public static void addTableEventListener(TableEventListener tableEventListener){
         AddItemPopupController.tableEventListener = tableEventListener;
@@ -73,13 +69,4 @@ public class AddItemPopupController extends View {
             onAddClicked();
     }
 
-    @Override
-    public void initializeView() {
-
-    }
-
-    @Override
-    public String getResourcePath() {
-        return AppProperties.PATH_ADD_ITEM_POPUP;
-    }
 }
