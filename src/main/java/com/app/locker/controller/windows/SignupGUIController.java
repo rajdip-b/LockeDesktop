@@ -1,9 +1,13 @@
 package com.app.locker.controller.windows;
 
+import com.app.locker.utils.classes.core.ObjectHolder;
 import com.app.locker.utils.classes.logic.DBConnector;
+import com.app.locker.utils.classes.ui.animation.ButtonHoverAnimation;
+import com.app.locker.utils.classes.ui.animation.TextFieldAnimation;
 import com.app.locker.utils.interfaces.WindowEventListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
@@ -18,6 +22,7 @@ public class SignupGUIController {
 
     @FXML private TextField txtUsername;
     @FXML private PasswordField txtPassword;
+    @FXML private Button btnStart;
     @FXML private ImageView imageView;
 
     private static WindowEventListener windowEventListener;
@@ -30,6 +35,10 @@ public class SignupGUIController {
     @FXML
     public void initialize(){
         dbConnector = new DBConnector();
+        imageView.setImage(ObjectHolder.getImageCache().getSignupBg());
+        new TextFieldAnimation(txtPassword);
+        new TextFieldAnimation(txtUsername);
+        new ButtonHoverAnimation(btnStart);
         try {
             dbConnector.setConnectionWithCreate();
         }catch (SQLException ignored){

@@ -2,7 +2,7 @@ package com.app.locker;
 
 import com.app.locker.controller.windows.LoginGUIController;
 import com.app.locker.controller.windows.SignupGUIController;
-import com.app.locker.utils.classes.logic.DBConnector;
+import com.app.locker.utils.classes.core.ObjectHolder;
 import com.app.locker.utils.interfaces.WindowEventListener;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -13,26 +13,29 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.util.Objects;
 
+import static com.app.locker.utils.classes.core.ObjectHolder.*;
+
 public class Main extends Application implements WindowEventListener {
 
     private static final int LOAD_SIGNUP_WINDOW = 1;
     private static final int LOAD_LOGIN_WINDOW = 2;
 
-    private static int loadWindow; // Flag to check the screen to be loaded
-
     private static Stage currentStage; // Stage currently enabled and under operation
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        DBConnector dbConnector = new DBConnector();
+//        getDbConnector() getDbConnector() = new getDbConnector()();
+        ObjectHolder.init();
         // Tries to connect to the existing derby database. If it exists, prompts for login.
         // Else, creates a new database and asks the user for a new signup.
         // For any corruption in the db, the app doesnt work.
+        // Flag to check the screen to be loaded
+        int loadWindow;
         try{
-            dbConnector.setConnectionWithoutCreate();
+            getDbConnector().setConnectionWithoutCreate();
             loadWindow = LOAD_LOGIN_WINDOW;
         }catch (Exception e){
-            dbConnector.setConnectionWithCreate();
+            getDbConnector().setConnectionWithCreate();
             loadWindow = LOAD_SIGNUP_WINDOW;
         }
 
@@ -100,15 +103,14 @@ public class Main extends Application implements WindowEventListener {
         try{
             root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/layouts/windows/PasswordGUI.fxml")));
         }catch (IOException e){
+            e.printStackTrace();
             System.out.println("Resource missing: PasswordGUI.fxml");
             System.exit(1);
         }
         stage.setScene(new Scene(root));
         stage.setResizable(false);
         stage.setTitle("Locker");
-        stage.setOnCloseRequest(event -> {
-            System.exit(1);
-        });
+        stage.setOnCloseRequest(event -> System.exit(1));
         return stage;
     }
 

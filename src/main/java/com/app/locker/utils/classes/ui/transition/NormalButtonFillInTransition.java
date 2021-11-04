@@ -5,14 +5,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 
-public class ButtonFillInTransition {
+public class NormalButtonFillInTransition {
 
     private final FillTransition buttonFillInTransition;
 
-    public ButtonFillInTransition(Shape shape){
+    public NormalButtonFillInTransition(Shape shape){
         buttonFillInTransition = new FillTransition(Duration.millis(200));
-        buttonFillInTransition.setFromValue(Color.WHITE);
-        buttonFillInTransition.setToValue(Color.rgb(125, 125, 125));
+        buttonFillInTransition.setToValue(Color.rgb(224, 11, 11));
+        buttonFillInTransition.setFromValue(Color.rgb(125, 125, 125));
         buttonFillInTransition.setCycleCount(1);
         buttonFillInTransition.setShape(shape);
     }

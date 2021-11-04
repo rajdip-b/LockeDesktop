@@ -6,16 +6,17 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane onKeyPressed="#onEscapePressed" prefHeight="383.0" prefWidth="530.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.locker.controller.popups.EditItemPopupController">
+<AnchorPane onKeyPressed="#onEscapePressed" prefHeight="392.0" prefWidth="530.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.locker.controller.popups.EditItemPopupController">
    <children>
       <Label layoutX="14.0" prefHeight="40.0" prefWidth="206.0" text="Edit Item">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <VBox fx:id="vBoxTxtFields" layoutX="181.0" layoutY="49.0" prefHeight="262.0" prefWidth="288.0" spacing="15.0">
+      <VBox fx:id="vBoxTxtFields" layoutX="182.0" layoutY="67.0" prefHeight="262.0" prefWidth="288.0" spacing="15.0">
          <children>
             <TextField fx:id="txtService" prefHeight="40.0" prefWidth="279.0" />
             <TextField fx:id="txtUsername" onKeyPressed="#onEnterClicked" prefHeight="40.0" prefWidth="279.0" />
@@ -24,7 +25,7 @@
             <TextField fx:id="txtCreated" prefHeight="40.0" prefWidth="279.0" />
          </children>
       </VBox>
-      <VBox fx:id="vBoxLabels" layoutY="58.0" prefHeight="262.0" prefWidth="162.0" spacing="36.0">
+      <VBox fx:id="vBoxLabels" layoutX="1.0" layoutY="76.0" prefHeight="262.0" prefWidth="162.0" spacing="36.0">
          <children>
             <Label text="Service: " VBox.vgrow="NEVER">
                <VBox.margin>
@@ -68,6 +69,7 @@
             </Label>
          </children>
       </VBox>
-      <Button layoutX="348.0" layoutY="320.0" mnemonicParsing="false" onAction="#onApplyClicked" prefHeight="40.0" prefWidth="121.0" text="Apply" />
+      <Button fx:id="btnApply" layoutX="349.0" layoutY="338.0" mnemonicParsing="false" onAction="#onApplyClicked" prefHeight="40.0" prefWidth="121.0" text="Apply" textFill="WHITE" />
+      <Line endX="421.0" layoutX="108.0" layoutY="48.0" startX="-107.0" />
    </children>
 </AnchorPane>

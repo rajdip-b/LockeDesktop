@@ -7,10 +7,8 @@ import com.app.locker.controller.popups.AddItemPopupController;
 import com.app.locker.controller.popups.EditItemPopupController;
 import com.app.locker.model.Entry;
 import com.app.locker.utils.classes.core.AppProperties;
-import com.app.locker.utils.classes.core.ObjectHolder;
-import com.app.locker.utils.classes.logic.View;
+import com.app.locker.utils.classes.logic.DBConnector;
 import com.app.locker.utils.interfaces.EntryEventListener;
-import com.app.locker.utils.interfaces.EventListener;
 import com.app.locker.utils.interfaces.SidebarEventListener;
 import com.app.locker.utils.interfaces.TableEventListener;
 import javafx.collections.FXCollections;
@@ -29,14 +27,11 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.UnaryOperator;
 
 import static com.app.locker.utils.classes.core.ObjectHolder.*;
 
@@ -53,15 +48,15 @@ public class PasswordGUIController implements SidebarEventListener, EntryEventLi
     private ObservableList<EntryViewController> entryViewsSelected;
     private ObservableList<Entry> entries;
     private ObservableList<EntryViewController> entryViews;
+    private DBConnector dbConnector;
 
     private Stage currentStage;
-//
-//    public PasswordGUIController(EventListener eventListener) {
-//        super(eventListener);
-//    }
 
     @FXML
-    public void initialize(){
+    public void initialize() throws SQLException {
+//        getDbConnector().setConnectionWithoutCreate();
+        dbConnector = new DBConnector();
+        dbConnector.setConnectionWithoutCreate();
         entries = FXCollections.observableArrayList();
         entryViewsSelected = FXCollections.observableArrayList();
         entryViews = FXCollections.observableArrayList();
@@ -91,7 +86,7 @@ public class PasswordGUIController implements SidebarEventListener, EntryEventLi
                 sidebarExpandedViewController.enableButtonEdit(false);
             }
         });
-//        loadExistingEntries();
+        loadExistingEntries();
     }
 
     public void addEntryViewToDisplay(EntryViewController entryViewController){
@@ -159,12 +154,17 @@ public class PasswordGUIController implements SidebarEventListener, EntryEventLi
     public void onDeleteClicked() {
         new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete the selected item(s)?", ButtonType.YES, ButtonType.NO).showAndWait().ifPresent(buttonType -> {
             if (buttonType == ButtonType.YES){
-                for (EntryViewController entryViewController : entryViewsSelected) {
-                    entries.remove(entryViewController.getEntry());
-                    entryViews.remove(entryViewController);
-                    removeEntryViewFromDisplay(entryViewController);
+                try{
+                    for (EntryViewController entryViewController : entryViewsSelected) {
+                        dbConnector.deleteEntry(entryViewController.getEntry());
+                        entries.remove(entryViewController.getEntry());
+                        entryViews.remove(entryViewController);
+                        removeEntryViewFromDisplay(entryViewController);
+                    }
+                    entryViewsSelected.clear();
+                } catch (SQLException e){
+                    new Alert(Alert.AlertType.INFORMATION, "Database corrupted!").showAndWait();
                 }
-                entryViewsSelected.clear();
             }
         });
     }
@@ -173,11 +173,15 @@ public class PasswordGUIController implements SidebarEventListener, EntryEventLi
     public void onDeleteAllClicked() {
         new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete everything?", ButtonType.YES, ButtonType.NO).showAndWait().ifPresent(buttonType -> {
             if (buttonType == ButtonType.YES){
-                entryBox.getChildren().clear();
-                entryViews.clear();
-                entries.clear();
-                entryViewsSelected.clear();
-//                getDbConnector().deleteAllEntries();
+                try{
+                    dbConnector.deleteAllEntries();
+                    entryBox.getChildren().clear();
+                    entryViews.clear();
+                    entries.clear();
+                    entryViewsSelected.clear();
+                } catch (SQLException e){
+                    new Alert(Alert.AlertType.INFORMATION, "Database corrupted!").showAndWait();
+                }
             }
         });
     }
@@ -186,20 +190,18 @@ public class PasswordGUIController implements SidebarEventListener, EntryEventLi
         entryViews.clear();
         ArrayList<Entry> existingEntries = null;
         try {
-            existingEntries = getDbConnector().getExistingData();
+            existingEntries = dbConnector.getExistingData();
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println("Error accessing/writing to database!");
             new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
             System.exit(1);
         }
-//        if (existingEntries == null) {
-//            new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
-//            System.exit(1);
-//            return;
-//        }
         for (Entry entry : existingEntries){
             EntryViewController entryViewController = new EntryViewController(this, entry);
             entryViews.add(entryViewController);
+            entries.add(entry);
+            entryBox.getChildren().add(entryViewController.getView());
         }
     }
 
@@ -228,24 +230,36 @@ public class PasswordGUIController implements SidebarEventListener, EntryEventLi
 
     @Override
     public void onItemAdded(Entry entry) {
-        entries.add(entry);
-        EntryViewController entryViewController = new EntryViewController(this, entry);
-        entryViews.add(entryViewController);
-        addEntryViewToDisplay(entryViewController);
-        new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
+        try{
+            dbConnector.addData(entry);
+            entries.add(entry);
+            EntryViewController entryViewController = new EntryViewController(this, entry);
+            entryViews.add(entryViewController);
+            addEntryViewToDisplay(entryViewController);
+            new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
+        } catch (SQLIntegrityConstraintViolationException e){
+            new Alert(Alert.AlertType.ERROR, "A similar service name already exists!").showAndWait();
+        } catch (SQLException e){
+            new Alert(Alert.AlertType.ERROR, "Database corrupt!").showAndWait();
+        }
     }
 
     @Override
     public void onItemEdited(Entry oldEntry, Entry newEntry) {
-        entryViewsSelected.clear();
-        entries.set(entries.indexOf(oldEntry), newEntry);
-        for (EntryViewController e : entryViews){
-            if (e.getEntry().equals(oldEntry)){
-                e.setEntry(newEntry);
-                break;
+        try{
+            dbConnector.updateEntry(newEntry);
+            entryViewsSelected.clear();
+            entries.set(entries.indexOf(oldEntry), newEntry);
+            for (EntryViewController e : entryViews){
+                if (e.getEntry().equals(oldEntry)){
+                    e.setEntry(newEntry);
+                    break;
+                }
             }
+            new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
+        } catch (SQLException e){
+            new Alert(Alert.AlertType.INFORMATION, "Database corrupted!").showAndWait();
         }
-        new Alert(Alert.AlertType.INFORMATION, "Changes applied successfully.").showAndWait();
     }
 
     @Override
@@ -254,15 +268,4 @@ public class PasswordGUIController implements SidebarEventListener, EntryEventLi
         currentStage = null;
     }
 
-
-
-//    @Override
-//    public void initializeView() {
-//
-//    }
-
-//    @Override
-//    public String getResourcePath() {
-//        return AppProperties.PATH_PASSWORD_GUI;
-//    }
 }

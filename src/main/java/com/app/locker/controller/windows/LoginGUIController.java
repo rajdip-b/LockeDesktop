@@ -1,12 +1,10 @@
 package com.app.locker.controller.windows;
 
-import com.app.locker.utils.classes.logic.DBConnector;
+import com.app.locker.utils.classes.ui.animation.ButtonHoverAnimation;
+import com.app.locker.utils.classes.ui.animation.TextFieldAnimation;
 import com.app.locker.utils.interfaces.WindowEventListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -15,22 +13,26 @@ import static com.app.locker.utils.classes.logic.Hash.toSHA256;
 import java.io.File;
 import java.sql.SQLException;
 
+import static com.app.locker.utils.classes.core.ObjectHolder.*;
+
 public class LoginGUIController {
 
     @FXML private PasswordField txtPassword;
     @FXML private Label lblWelcome;
+    @FXML private Button btnOpen;
+    @FXML private Button btnReset;
 
-    private DBConnector dbConnector;
     private static WindowEventListener windowEventListener;
-    private String username;
 
     @FXML
     public void initialize(){
-        username = null;
-        dbConnector = new DBConnector();
+        String username = null;
+        new ButtonHoverAnimation(btnOpen);
+        new ButtonHoverAnimation(btnReset);
+        new TextFieldAnimation(txtPassword);
         try{
-            dbConnector.setConnectionWithoutCreate();
-            username = dbConnector.getName();
+            getDbConnector().setConnectionWithoutCreate();
+            username = getDbConnector().getName();
         }catch (SQLException e){
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
@@ -49,7 +51,7 @@ public class LoginGUIController {
         password = toSHA256(password);
         String dbPassword = null;
         try{
-            dbPassword = dbConnector.getPassword();
+            dbPassword = getDbConnector().getPassword();
         }catch (SQLException e){
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();
@@ -57,7 +59,7 @@ public class LoginGUIController {
         }
         if (dbPassword.equals(password)){
             try {
-                dbConnector.connection.close();
+                getDbConnector().connection.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -73,7 +75,7 @@ public class LoginGUIController {
         password = toSHA256(password);
         String dbPassword = null;
         try{
-            dbPassword = dbConnector.getPassword();
+            dbPassword = getDbConnector().getPassword();
         }catch (SQLException e){
             System.out.println("Error accessing database!");
             new Alert(Alert.AlertType.ERROR, "Database corrupted!").showAndWait();

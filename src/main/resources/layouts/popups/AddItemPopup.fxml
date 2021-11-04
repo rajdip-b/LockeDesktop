@@ -4,19 +4,21 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane onKeyPressed="#onEscapePressed" prefHeight="377.0" prefWidth="436.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.locker.controller.popups.AddItemPopupController">
+<AnchorPane onKeyPressed="#onEscapePressed" prefHeight="377.0" prefWidth="436.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.locker.controller.popups.AddItemPopupController">
    <children>
       <Label layoutX="14.0" layoutY="14.0" text="Add Item">
          <font>
             <Font size="19.0" />
          </font>
       </Label>
-      <TextField fx:id="txtService" layoutX="90.0" layoutY="64.0" onKeyPressed="#onEnterClicked" prefHeight="38.0" prefWidth="255.0" promptText="Service" />
-      <TextField fx:id="txtUsername" layoutX="90.0" layoutY="125.0" onKeyPressed="#onEnterClicked" prefHeight="38.0" prefWidth="255.0" promptText="Username" />
-      <TextField fx:id="txtPassword" layoutX="90.0" layoutY="187.0" onKeyPressed="#onEnterClicked" prefHeight="38.0" prefWidth="255.0" promptText="Password" />
-      <TextField fx:id="txtEmail" layoutX="90.0" layoutY="250.0" onKeyPressed="#onEnterClicked" prefHeight="38.0" prefWidth="255.0" promptText="Email" />
-      <Button layoutX="225.0" layoutY="325.0" mnemonicParsing="false" onAction="#onAddClicked" prefHeight="38.0" prefWidth="120.0" text="Add" />
+      <TextField fx:id="txtService" layoutX="91.0" layoutY="77.0" onKeyPressed="#onEnterClicked" prefHeight="38.0" prefWidth="255.0" promptText="Service" />
+      <TextField fx:id="txtUsername" layoutX="91.0" layoutY="138.0" onKeyPressed="#onEnterClicked" prefHeight="38.0" prefWidth="255.0" promptText="Username" />
+      <TextField fx:id="txtPassword" layoutX="91.0" layoutY="200.0" onKeyPressed="#onEnterClicked" prefHeight="38.0" prefWidth="255.0" promptText="Password" />
+      <TextField fx:id="txtEmail" layoutX="91.0" layoutY="263.0" onKeyPressed="#onEnterClicked" prefHeight="38.0" prefWidth="255.0" promptText="Email" />
+      <Button fx:id="btnAdd" layoutX="225.0" layoutY="325.0" mnemonicParsing="false" onAction="#onAddClicked" prefHeight="38.0" prefWidth="120.0" text="Add" textFill="WHITE" />
+      <Line endX="335.0" layoutX="101.0" layoutY="52.0" startX="-100.0" />
    </children>
 </AnchorPane>

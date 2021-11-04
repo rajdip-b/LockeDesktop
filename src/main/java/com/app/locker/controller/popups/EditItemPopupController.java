@@ -2,11 +2,14 @@ package com.app.locker.controller.popups;
 
 import com.app.locker.controller.windows.PasswordGUIController;
 import com.app.locker.model.Entry;
+import com.app.locker.utils.classes.ui.animation.ButtonHoverAnimation;
+import com.app.locker.utils.classes.ui.animation.TextFieldAnimation;
 import com.app.locker.utils.interfaces.TableEventListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -22,6 +25,7 @@ public class EditItemPopupController {
     @FXML TextField txtPassword;
     @FXML TextField txtEmail;
     @FXML TextField txtCreated;
+    @FXML Button btnApply;
 
     private String existingUsername;
     private String existingPassword;
@@ -36,7 +40,13 @@ public class EditItemPopupController {
 
     @FXML
     public void initialize(){
-        this.entry = PasswordGUIController.currentSelectedEntry;
+        entry = PasswordGUIController.currentSelectedEntry;
+        new TextFieldAnimation(txtService);
+        new TextFieldAnimation(txtUsername);
+        new TextFieldAnimation(txtPassword);
+        new TextFieldAnimation(txtEmail);
+        new TextFieldAnimation(txtCreated);
+        new ButtonHoverAnimation(btnApply);
         existingPassword = entry.getPassword();
         existingEmail = entry.getEmail();
         existingUsername = entry.getUsername();

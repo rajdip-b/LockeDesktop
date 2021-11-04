@@ -25,6 +25,7 @@ public class ImageCache {
     private final Image passwordIconColoured;
     private final Image emailIconColoured;
     private final Image serviceIconColoured;
+    private final Image imgSignupBG;
 
     public ImageCache(){
         addIconWhite = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/add_white.png")));
@@ -46,6 +47,7 @@ public class ImageCache {
         passwordIconColoured = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/password_coloured.png")));
         emailIconColoured = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/email_coloured.png")));
         serviceIconColoured = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/service_coloured.png")));
+        imgSignupBG = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/signup_bg.png")));
     }
 
     public Image getAlternateImage(Image image){
@@ -143,5 +145,9 @@ public class ImageCache {
 
     public Image getServiceIconColoured() {
         return serviceIconColoured;
+    }
+
+    public Image getSignupBg(){
+        return imgSignupBG;
     }
 }

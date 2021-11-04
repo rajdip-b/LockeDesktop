@@ -4,10 +4,13 @@ import com.app.locker.controller.windows.PasswordGUIController;
 import com.app.locker.model.Entry;
 import com.app.locker.utils.classes.core.AppProperties;
 import com.app.locker.utils.classes.logic.View;
+import com.app.locker.utils.classes.ui.animation.ButtonHoverAnimation;
+import com.app.locker.utils.classes.ui.animation.TextFieldAnimation;
 import com.app.locker.utils.interfaces.EventListener;
 import com.app.locker.utils.interfaces.TableEventListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -20,6 +23,7 @@ public class AddItemPopupController {
     @FXML TextField txtUsername;
     @FXML TextField txtPassword;
     @FXML TextField txtEmail;
+    @FXML Button btnAdd;
 
     private static TableEventListener tableEventListener = null;
 
@@ -27,6 +31,14 @@ public class AddItemPopupController {
         AddItemPopupController.tableEventListener = tableEventListener;
     }
 
+    @FXML
+    public void initialize(){
+        new TextFieldAnimation(txtEmail);
+        new TextFieldAnimation(txtUsername);
+        new TextFieldAnimation(txtPassword);
+        new TextFieldAnimation(txtService);
+        new ButtonHoverAnimation(btnAdd);
+    }
 
     @FXML
     public void onAddClicked(){

@@ -1,7 +1,7 @@
 package com.app.locker.controller.fragments;
 
 import com.app.locker.utils.classes.ui.animation.TextFieldAnimation;
-import com.app.locker.utils.classes.ui.transition.ButtonHoverAnimation;
+import com.app.locker.utils.classes.ui.animation.ButtonHoverAnimation;
 import com.app.locker.utils.classes.ui.animation.HBoxHoverAnimation;
 import com.app.locker.utils.classes.core.AppProperties;
 import com.app.locker.utils.classes.logic.View;
